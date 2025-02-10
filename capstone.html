@@ -74,17 +74,15 @@
         <p>Enter the name of a stock to estimate its fair value</p>
         <input type="text" id="stockTicker" placeholder="Enter the name of a stock.">
         <button onclick="fetchStockData()">Get Fair Value</button>
-        <div id="result" class="result" style="display:none;"></div>
-        <p id="errorMessage" class="error"></p>
 
         <h2>Select a Valuation Model</h2>
         <select id="valuationModel" onchange="displayFormula()">
             <option value="">-- Choose a Model --</option>
             <option value="DCF">Discounted Cash Flow (DCF)</option>
-            <option value="Graham">Graham’s Valuation Model</option>
+            <option value="Graham">Graham's Valuation Model</option>
             <option value="DDM">Dividend Discount Model (DDM)</option>
             <option value="Relative">Relative Valuation Model</option>
-            <option value="Lynch">Peter Lynch’s Formula</option>
+            <option value="Lynch">Peter Lynch's Formula</option>
         </select>
 
         <div id="modelFormula" class="model-formula" style="display:none;"></div>
@@ -105,8 +103,8 @@
                                   "<p>Where:<br> - t = Time period<br> - r = Discount rate</p>";
                     break;
                 case "Graham":
-                    formulaText = "<h2>Graham’s Valuation Model</h2>" +
-                                  "<p>Intrinsic Value = EPS × (8.5 + 2g) × 4.4 / Y</p>" +
+                    formulaText = "<h2>Graham's Valuation Model</h2>" +
+                                  "<p>Intrinsic Value = EPS × (8.5 + 2g) x 4.4 / Y</p>" +
                                   "<p>Where:<br> - EPS = Earnings per share<br> - g = Growth rate<br> - Y = Current yield on AAA bonds</p>";
                     break;
                 case "DDM":
@@ -116,12 +114,12 @@
                     break;
                 case "Relative":
                     formulaText = "<h2>Relative Valuation Model</h2>" +
-                                  "<p>Fair Value = Industry P/E × Company Earnings</p>" +
-                                  "<p>Used to compare a company’s valuation relative to peers.</p>";
+                                  "<p>Fair Value = Industry P/E x Company Earnings</p>" +
+                                  "<p>Used to compare a company's valuation relative to peers.</p>";
                     break;
                 case "Lynch":
-                    formulaText = "<h2>Peter Lynch’s Formula</h2>" +
-                                  "<p>Fair Value = EPS × (P/E Growth Rate)</p>" +
+                    formulaText = "<h2>Peter Lynch's Formula</h2>" +
+                                  "<p>Fair Value = EPS x (P/E Growth Rate)</p>" +
                                   "<p>Where:<br> - EPS = Earnings per share<br> - P/E = Price-to-earnings ratio</p>";
                     break;
                 default:
