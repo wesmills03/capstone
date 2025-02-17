@@ -48,23 +48,6 @@
             color: red;
             margin-top: 10px;
         }
-        .info-boxes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-            padding: 0 10%;
-        }
-        .info-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
-        h2 {
-            color: #007BFF;
-        }
     </style>
 </head>
 <body>
@@ -72,8 +55,15 @@
     <div class="container">
         <h1>Stock Fair Value Calculator</h1>
         <p>Enter the name of a stock to estimate its fair value</p>
-        <input type="text" id="stockTicker" placeholder="Enter the name of a stock.">
-        <button onclick="fetchStockData()">Get Fair Value</button>
+
+        <form method="POST">
+            <input type="text" id="stockTicker" name="stockTicker" placeholder="Enter the stock ticker" required>
+            <button type="submit">Get Fair Value</button>
+        </form>
+
+        {% if value %}
+            <p class="result">The latest price is: <strong>${{ value }}</strong></p>
+        {% endif %}
 
         <h2>Select a Valuation Model</h2>
         <select id="valuationModel" onchange="displayFormula()">
@@ -89,28 +79,6 @@
     </div>
 
     <script>
-        function fetchStockData() {
-            const stockTicker = document.getElementById("stockTicker").value.trim();
-            if (!stockTicker) {
-                alert("Please enter a stock ticker.");
-                return;
-            }
-
-            fetch(`/get_price?ticker=${stockTicker}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert("Error: " + data.error);
-                    } else {
-                        alert(`The latest price for ${data.ticker} is $${data.price}`);
-                    }
-                })
-                .catch(error => {
-                    alert("Failed to fetch stock price.");
-                    console.error(error);
-                });
-        }
-
         function displayFormula() {
             const model = document.getElementById("valuationModel").value;
             const formulaDiv = document.getElementById("modelFormula");
@@ -125,7 +93,7 @@
                     break;
                 case "Graham":
                     formulaText = "<h2>Graham's Valuation Model</h2>" +
-                                  "<p>Intrinsic Value = EPS × (8.5 + 2g) x 4.4 / Y</p>" +
+                                  "<p>Intrinsic Value = EPS × (8.5 + 2g) × 4.4 / Y</p>" +
                                   "<p>Where:<br> - EPS = Earnings per share<br> - g = Growth rate<br> - Y = Current yield on AAA bonds</p>";
                     break;
                 case "DDM":
@@ -135,12 +103,12 @@
                     break;
                 case "Relative":
                     formulaText = "<h2>Relative Valuation Model</h2>" +
-                                  "<p>Fair Value = Industry P/E x Company Earnings</p>" +
+                                  "<p>Fair Value = Industry P/E × Company Earnings</p>" +
                                   "<p>Used to compare a company's valuation relative to peers.</p>";
                     break;
                 case "Lynch":
                     formulaText = "<h2>Peter Lynch's Formula</h2>" +
-                                  "<p>Fair Value = EPS x (P/E Growth Rate)</p>" +
+                                  "<p>Fair Value = EPS × (P/E Growth Rate)</p>" +
                                   "<p>Where:<br> - EPS = Earnings per share<br> - P/E = Price-to-earnings ratio</p>";
                     break;
                 default:

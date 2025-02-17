@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Stock Value Checker</title>
+        <title>First Stock Value</title>
     </head>
     <body>
-        <h1>Stock Price Checker</h1>
-        <form method="POST">
-            <label for="ticker">Enter Stock Ticker:</label>
-            <input type="text" id="ticker" name="ticker" required>
+        <p>Enter the name of a stock to estimate its fair value</p>
+        <form method="POST" autocomplete="off">
+            <input type="text" id="stockTicker" name="stockTicker" placeholder="Enter the name of a stock.">
             <button type="submit">Get Price</button>
         </form>
-
-        {% if value is not none %}
-            <h2>Current value of {{ ticker }}: {{ value }}</h2>
+        
+        {% if value %}
+            <p>The latest price is: {{ value }}</p>
         {% endif %}
     </body>
 </html>
-
