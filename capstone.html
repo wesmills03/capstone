@@ -90,6 +90,28 @@
 
 
     <script>
+        function fetchStockData() {
+            const stockTicker = document.getElementById("stockTicker").value.trim();
+            if (!stockTicker) {
+                alert("Please enter a stock ticker.");
+                return;
+            }
+
+            fetch(`http://localhost:8000/get_price?ticker=${stockTicker}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert("Error: " + data.error);
+                    } else {
+                        alert(`The latest price for ${stockTicker.toUpperCase()} is $${data.price}`);
+                    }
+                })
+                .catch(error => {
+                    alert("Failed to fetch stock price.");
+                    console.error(error);
+                });
+        }
+
         function displayFormula() {
             const model = document.getElementById("valuationModel").value;
             const formulaDiv = document.getElementById("modelFormula");
