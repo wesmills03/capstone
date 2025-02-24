@@ -62,7 +62,7 @@
         </form>
 
         {% if value %}
-            <p class="result">The latest price is: <strong>${{ value }}</strong></p>
+            <p class="result">The latest price of {{ ticker_name }} <em>({{ longName }})</em></string> is: <strong>${{ value }}</strong></p>
         {% endif %}
 
         <h2>Select a Valuation Model</h2>
