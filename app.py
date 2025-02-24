@@ -12,6 +12,7 @@ def index():
     price = None
     error_message = None
     longName = None
+    ticker_name = None
     if request.method == "POST":
         ticker_name = request.form.get("stockTicker")
         if ticker_name:
