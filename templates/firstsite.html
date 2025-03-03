@@ -65,6 +65,30 @@
             <p class="result">The latest price of {{ ticker_name }} <em>({{ longName }})</em></string> is: <strong>${{ value }}</strong></p>
         {% endif %}
 
+        <!-- {% if fairValueGGM %}
+            <p class="result">The computed fair value using the <strong>Dividend Discount Model</strong> for {{ ticker_name }} is: <strong>${{ fairValueGGM }}</strong></p>
+        {% endif %} -->
+
+
+        {% if ggm_debug %}
+            {% if ggm_debug.fairValue %}
+                <p class="result">
+                    The computed fair value (GGM) for {{ ticker_name }} is: <strong>${{ ggm_debug.fairValue | round(2) }}</strong>
+                </p>
+            {% endif %}
+            <div class="debug">
+                <h2>Debug Information</h2>
+                <p><strong>D₁ (Expected Dividend):</strong> {{ ggm_debug.D1 }}</p>
+                <p><strong>Cost of Equity (r):</strong> {{ ggm_debug.r }}</p>
+                <p><strong>Dividend Growth Rate (g):</strong> {{ ggm_debug.g }}</p>
+                <p><strong>Risk Free Rate:</strong> {{ ggm_debug.risk_free_rate }}</p>
+                <p><strong>Market Return (g):</strong> {{ ggm_debug.market_return }}</p>
+                {% if ggm_debug.error %}
+                    <p class="error"><strong>Error:</strong> {{ ggm_debug.error }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+        
         <h2>Select a Valuation Model</h2>
         <select id="valuationModel" onchange="displayFormula()">
             <option value="">-- Choose a Model --</option>
