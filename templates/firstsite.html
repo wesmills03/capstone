@@ -61,6 +61,10 @@
             <button type="submit">Get Fair Value</button>
         </form>
 
+        {% if error_message %}
+        <p class="error">{{ error_message }}</p>
+        {% endif %}
+
         {% if value %}
             <p class="result">The latest price of {{ ticker_name }} <em>({{ longName }})</em></string> is: <strong>${{ value }}</strong></p>
         {% endif %}
@@ -83,9 +87,8 @@
                 <p><strong>Dividend Growth Rate (g):</strong> {{ ggm_debug.g }}</p>
                 <p><strong>Risk Free Rate:</strong> {{ ggm_debug.risk_free_rate }}</p>
                 <p><strong>Market Return (g):</strong> {{ ggm_debug.market_return }}</p>
-                {% if ggm_debug.error %}
-                    <p class="error"><strong>Error:</strong> {{ ggm_debug.error }}</p>
-                {% endif %}
+                <p><strong>Beta: </strong> {{ ggm_debug.beta }}</p>
+                <p><strong>Error: </strong> {{ ggm_debug.error }}</p>
             </div>
         {% endif %}
         
