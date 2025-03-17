@@ -19,7 +19,7 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-        input, select {
+        input {
             padding: 10px;
             width: 80%;
             border: 1px solid #ccc;
@@ -38,7 +38,7 @@
         button:hover {
             background-color: #0056b3;
         }
-        .result, .model-formula {
+        .result {
             margin-top: 20px;
             padding: 15px;
             background: #e3f2fd;
@@ -61,44 +61,56 @@
             <button type="submit">Get Fair Value</button>
         </form>
 
-        {% if value %}
-            <p class="result">The latest price of {{ ticker_name }} <em>({{ longName }})</em></string> is: <strong>${{ value }}</strong></p>
+        {% if price %}
+            <p class="result"><strong>Stock:</strong> {{ ticker_name }}</p>
+            <p><strong>Market Price:</strong> ${{ price }}</p>
+            <p><strong>Earnings Per Share (EPS):</strong> {{ eps }}</p>
+            <p><strong>Current P/E Ratio:</strong> {{ current_pe if current_pe else 'Data unavailable ⚠️' }}</p>
+            <p><strong>Historical P/E Ratio:</strong> {{ historical_pe }}</p>
+
+            <h2>Estimated Fair Value</h2>
+            <p><strong>Fair Value (P/E Model):</strong> ${{ fair_value }}</p>
+
+            <h2>Stock Valuation</h2>
+            <p><strong>Valuation Status:</strong> {{ valuation }}</p>
+
+            <h2>RSI (Relative Strength Index)</h2>
+            <p><strong>RSI (14-day):</strong> {{ rsi }}</p>
+            {% if rsi != "Data unavailable ⚠️" %}
+                {% if rsi > 70 %}
+                    <p style="color: red;"><strong>Stock is Overbought (RSI > 70) 🚀</strong></p>
+                {% elif rsi < 30 %}
+                    <p style="color: green;"><strong>Stock is Oversold (RSI < 30) 📉</strong></p>
+                {% else %}
+                    <p style="color: blue;"><strong>Stock is in a Neutral Zone ⚖️</strong></p>
+                {% endif %}
+            {% endif %}
         {% endif %}
 
-        <h2>Select a Valuation Model</h2>
-        <select id="valuationModel" onchange="displayFormula()">
-            <option value="">-- Choose a Model --</option>
-            <option value="DDM">Dividend Discount Model (DDM)</option>
-        </select>
+        {% if stock_chart %}
+            <div class="stock-chart">
+                {{ stock_chart|safe }}
+            </div>
+        {% endif %}
 
-        <div id="modelFormula" class="model-formula" style="display:none;"></div>
+        {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %}
+        {% if stock_price_chart %}
+    <h2>Stock Price Chart</h2>
+    <div class="stock-chart">
+        {{ stock_price_chart|safe }}
+    </div>
+{% endif %}
+
+{% if rsi_chart %}
+    <h2>RSI (Relative Strength Index) Chart</h2>
+    <div class="rsi-chart">
+        {{ rsi_chart|safe }}
+    </div>
+{% endif %}
+
     </div>
 
-    <script>
-        function displayFormula() {
-            const model = document.getElementById("valuationModel").value;
-            const formulaDiv = document.getElementById("modelFormula");
-
-            let formulaText = "";
-            
-            switch (model) {
-                case "DDM":
-                    formulaText = "<h2>Dividend Discount Model (DDM)</h2>" +
-                                  "<p>Fair Value = D / (r - g)</p>" +
-                                  "<p>Where:<br> - D = Expected annual dividend<br> - r = Required rate of return<br> - g = Dividend growth rate</p>";
-                    break;
-                default:
-                    formulaText = "";
-                    break;
-            }
-
-            if (formulaText) {
-                formulaDiv.innerHTML = formulaText;
-                formulaDiv.style.display = "block";
-            } else {
-                formulaDiv.style.display = "none";
-            }
-        }
-    </script>
 </body>
 </html>
