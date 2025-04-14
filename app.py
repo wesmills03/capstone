@@ -198,6 +198,8 @@ def home():
 def stock_details():
     ticker = request.args.get("ticker", None)
     formula = request.args.get("formula", "pe")  # default is pe
+    stock = yf.Ticker(ticker)
+    long_name = stock.info.get("longName", ticker)  # fallback to ticker if not available
     error_message = None
     stock_chart = None
     rsi = "Data unavailable ⚠️"
@@ -240,6 +242,7 @@ def stock_details():
 
     return render_template("stock.html",
                            ticker=ticker,
+                           long_name=long_name,
                            price=price,
                            eps=eps,
                            current_pe=current_pe,
