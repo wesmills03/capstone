@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Details - {{ ticker }}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #2B2B2B;
+            color: #EAEAEA;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* top navigation bar */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #593F62;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+            z-index: 1000;
+        }
+        .top-bar form {
+            margin: 0;
+            flex: 1;
+        }
+        .top-bar input[type="text"] {
+            width: 50%;
+            padding: 6px;
+            background-color: #3C3C3C;
+            color: #EAEAEA;
+            border: none;
+            border-radius: 4px;
+        }
+        .top-bar button {
+            margin-left: 10px;
+            background-color: #A5C4D4;
+            color: #000;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* main */
+        .container {
+            display: flex;
+            width: 100%;
+            margin-top: 60px;
+            padding-bottom: 40px;
+            align-items: flex-start;
+            flex: 1;
+        }
+
+        .content {
+            flex: 2;
+            padding: 20px;
+            text-align: left;
+        }
+        
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 300px;
+            padding: 20px;
+            background: #555;
+            color: #EAEAEA;
+            border-left: 1px solid #444;
+            align-self: flex-start;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+        }
+
+        .tab-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #7B6D8D;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .tab-button.active {
+            background-color: #A5C4D4;
+            color: #000;
+        }
+
+        .formula-info {
+            margin-top: 15px;
+            background-color: #444;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .result {
+            background: #3E3E3E;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 5px solid #8499B1;
+        }
+
+        .stock-chart {
+            margin-top: 20px;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .footer {
+            background: #593F62;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.85em;
+        }
+        .news-section {
+            margin-top: 30px;
+            background: #3E3E3E;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .news-section h2 {
+            margin-top: 0;
+        }
+        .news-item {
+            margin-bottom: 15px;
+        }
+        .news-item a {
+            color: #A5C4D4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .news-item p {
+            margin: 5px 0 0;
+            color: #C8C8C8;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-bar">
+        <form method="POST">
+            <input type="text" name="stockTicker" value="{{ ticker }}" placeholder="Enter Stock Ticker" required>
+            <button type="submit">Go</button>
+        </form>
+        <nav>
+            <a href="{{ url_for('home') }}" style="color:white; margin-right:15px;">Home</a>
+            <a href="{{ url_for('glossary') }}" style="color:white; margin-right:15px;">Glossary</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="content">
+            <h1>Stock: {{ ticker }}</h1>
+            {% if error_message %}
+                <p class="error">{{ error_message }}</p>
+            {% else %}
+                {% if price %}
+                <div class="result" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 100px;">
+                    <div class="data" style="flex: 1;">
+                        <p><strong>Market Price:</strong> ${{ price }}</p>
+                        <p><strong>Earnings Per Share (EPS):</strong> {{ eps }}</p>
+                        <p><strong>Current P/E Ratio:</strong> {{ current_pe if current_pe else 'Data unavailable ⚠️' }}</p>
+                        <p><strong>Historical P/E Ratio:</strong> {{ historical_pe }}</p>
+                        <h2>Calculated Value</h2>
+                        <p><strong>Value:</strong> ${{ fair_value }}</p>
+                        <p><strong>Valuation Status:</strong> {{ valuation }}</p>
+                        <h2>RSI (14-day)</h2>
+                        <p>{{ rsi }}</p>
+                    </div>
+                    {% if company_logo %}
+                        <div class="logo" style="flex-shrink: 0;">
+                            <img src="{{ company_logo }}" alt="{{ ticker }} Logo" style="height: 100px;">
+                        </div>
+                    {% endif %}
+                </div>
+                
+                    {% if stock_chart %}
+                        <div class="stock-chart">
+                            {{ stock_chart|safe }}
+                        </div>
+                {% endif %}
+                <div class="news-section">
+                    <h2>Latest News on {{ ticker }}</h2>
+                    {% if news_items %}
+                        {% for item in news_items %}
+                            <div class="news-item">
+                                <a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
+                                <p>{{ item.description }}</p>
+                                <small>Published: {{ item.publishedAt | format_datetime }}</small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No recent news available.</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                    <p>No data available.</p>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="sidebar">
+            <h3>Choose Formula</h3>
+            <a href="{{ url_for('stock_details', ticker=ticker, formula='pe') }}">
+                <button class="tab-button {% if selected_formula == 'pe' %}active{% endif %}">P/E Model</button>
+            </a>
+            <a href="{{ url_for('stock_details', ticker=ticker, formula='alt') }}">
+                <button class="tab-button {% if selected_formula == 'alt' %}active{% endif %}">Alternative Formula</button>
+            </a>
+            <a href="{{ url_for('stock_details', ticker=ticker, formula='ddm') }}">
+                <button class="tab-button {% if selected_formula == 'ddm' %}active{% endif %}">Dividend Discount Model</button>
+            </a>
+            <a href="{{ url_for('stock_details', ticker=ticker, formula='dcf') }}">
+                <button class="tab-button {% if selected_formula == 'dcf' %}active{% endif %}">Discounted Cash Flow</button>
+            </a>
+            <div class="formula-info">
+                <p><strong>P/E Model:</strong> Uses historical P/E and EPS for valuation.</p>
+                <p><strong>Alternative:</strong> Applies a 5% premium to the market price.</p>
+                <p><strong>DDM:</strong> Based on dividend yield with assumed growth and discount rates.</p>
+                <p><strong>DCF:</strong> Projects future EPS for 10 years and discounts it back.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Mills & Tikhomirov - Stock Fair Value Calculator - Spring 2025 Capstone Project</p>
+    </div>
+</body>
+</html>
