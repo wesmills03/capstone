@@ -5,6 +5,8 @@ import plotly.io as pio
 import requests
 from datetime import datetime
 from urllib.parse import urlparse
+from markupsafe import Markup
+import re
 
 NEWS_API_KEY = "883ab179e0c1433f92eb192dbcf19e47"
 
@@ -12,8 +14,23 @@ app = Flask(__name__)
 
 # python app.py runserver
 
-
 # formulas
+
+glossary_terms = {
+    "Fair Value": "The estimated intrinsic value of a stock based on fundamentals like earnings, growth potential, and market conditions.",
+    "Stock": "A stock is a type of investment that represents an ownership share in a company.",
+    "Stock Ticker": "A stock ticker is a short abbreviation used to uniquely identify publicly traded shares of a particular stock on a particular stock market.",
+    "Earnings Per Share (EPS)": "A company's net profit divided by the number of outstanding shares, indicating profitability on a per-share basis.",
+    "P/E Ratio": "The Price-to-Earnings Ratio. It’s calculated by dividing the market price per share by the EPS. It is used to evaluate a stock's valuation.",
+    "RSI (Relative Strength Index)": "A momentum oscillator measuring the speed and change of price movements. RSI helps identify overbought or oversold conditions in a stock.",
+    "Market Price": "The current trading price of a stock in the market.",
+    "Dividend": "A portion of a company's profit distributed to shareholders. It can provide a regular income stream for investors.",
+    "Historical P/E": "An average P/E ratio based on past performance, often used as a benchmark for valuation.",
+    "Forward P/E": "A P/E ratio that uses expected future earnings, offering a projection-based valuation.",
+    "Discounted Cash Flow (DCF)": "A method used to determine the value of an investment based on its expected future cash flows, discounted back to their present value.",
+    "Dividend Discount Model (DDM)": "A valuation model that estimates the fair value of a stock by discounting the expected future dividends back to their present value."
+}
+
 
 def format_datetime(value):
     dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -21,6 +38,22 @@ def format_datetime(value):
 
 
 app.jinja_env.filters['format_datetime'] = format_datetime
+
+
+def link_glossary(text):
+    if not text or not isinstance(text, str):
+        return text
+
+    for term in glossary_terms:
+        slug = term.replace(' ', '-')
+        pattern = rf'\b{re.escape(term)}\b'
+        link = url_for("glossary") + f"#term-{slug}"
+        replacement = f'<a href="{link}">{term}</a>'
+        text = re.sub(pattern, replacement, text)
+    return Markup(text)
+
+
+app.jinja_env.filters['link_glossary'] = link_glossary
 
 
 def get_stock_news(ticker):
@@ -260,20 +293,6 @@ def stock_details():
 # glossary route
 @app.route("/glossary")
 def glossary():
-    glossary_terms = {
-        "Fair Value": "The estimated intrinsic value of a stock based on fundamentals like earnings, growth potential, and market conditions.",
-        "Stock": "A stock is a type of investment that represents an ownership share in a company.",
-        "Stock Ticker": "A stock ticker is a short abbreviation used to uniquely identify publicly traded shares of a particular stock on a particular stock market.",
-        "Earnings Per Share (EPS)": "A company's net profit divided by the number of outstanding shares, indicating profitability on a per-share basis.",
-        "P/E Ratio": "The Price-to-Earnings Ratio. It’s calculated by dividing the market price per share by the EPS. It is used to evaluate a stock's valuation.",
-        "RSI (Relative Strength Index)": "A momentum oscillator measuring the speed and change of price movements. RSI helps identify overbought or oversold conditions in a stock.",
-        "Market Price": "The current trading price of a stock in the market.",
-        "Dividend": "A portion of a company's profit distributed to shareholders. It can provide a regular income stream for investors.",
-        "Historical P/E": "An average P/E ratio based on past performance, often used as a benchmark for valuation.",
-        "Forward P/E": "A P/E ratio that uses expected future earnings, offering a projection-based valuation.",
-        "Discounted Cash Flow (DCF)": "A method used to determine the value of an investment based on its expected future cash flows, discounted back to their present value.",
-        "Dividend Discount Model (DDM)": "A valuation model that estimates the fair value of a stock by discounting the expected future dividends back to their present value."
-    }
     return render_template("glossary.html", glossary_terms=glossary_terms)
 
 
